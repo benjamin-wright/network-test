@@ -135,7 +135,7 @@ func (s *Stats) Update(duration int64) {
 }
 
 func (s *Stats) String() string {
-	return fmt.Sprintf("Window - %s\nTotals - %s", s.lastWindow.String(), s.totals.String())
+	return fmt.Sprintf("Last %d seconds - %s\nTotals - %s", int(s.windowSize.Seconds()), s.lastWindow.String(), s.totals.String())
 }
 
 func (s *Stats) PrintHistogram() string {
@@ -151,8 +151,8 @@ func (s *Stats) PrintHistogram() string {
 	lines = append(lines, fmt.Sprintf("Histogram, Total: %d", s.histogram.total))
 
 	for i, threshold := range s.histogram.thresholds {
-		length := int(float64(s.histogram.buckets[i]) / float64(max) * 50)
-		lines = append(lines, fmt.Sprintf("%5dms : %s", threshold, strings.Repeat("█", length)))
+		length := float64(s.histogram.buckets[i]) / float64(max) * 100
+		lines = append(lines, fmt.Sprintf("%5dms : %-50s : %.2f%%", threshold, strings.Repeat("█", int(length/2.0)), length*float64(max)/float64(s.histogram.total)))
 	}
 
 	return strings.Join(lines, "\n")
